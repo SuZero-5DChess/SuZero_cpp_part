@@ -67,13 +67,13 @@ public:
         return 0;//std::hash<StateForAI>(s);
     }
     virtual bool getPlayer() = 0;
-    virtual bool isGameOverForAI() const = 0;
-    virtual int getRewardForAI() const = 0;
+    virtual bool isGameOver() const = 0;
+    virtual int getReward() const = 0;
     virtual StateForAI getStateForAI() const = 0;
-    virtual std::tuple<bool, std::vector<int>> getAllLegalActionForAI() const = 0;
+    virtual std::tuple<bool, std::vector<int>> getAllLegalAction() const = 0;
     virtual std::array<float, 2> forceScoring() const = 0;
-    virtual std::shared_ptr<SuZeroState> switchActivePlayerForAI() const = 0;
-    virtual std::shared_ptr<SuZeroState> selectMovePositionForAI(std::array<int, 4>) const = 0;
+    virtual std::shared_ptr<SuZeroState> switchActivePlayer() const = 0;
+    virtual std::shared_ptr<SuZeroState> selectMovePosition(std::array<int, 4>) const = 0;
 };
 
 class SuZeroStateDummyImplementation : public SuZeroState {
@@ -83,12 +83,12 @@ public:
         return true; // Dummy return value
     }
 
-    bool isGameOverForAI() const override 
+    bool isGameOver() const override 
     {
         return false; // Dummy return value
     }
 
-    int getRewardForAI() const override 
+    int getReward() const override 
     {
         return 0; // Dummy return value
     }
@@ -98,7 +98,7 @@ public:
         return StateForAI{}; // Return a default-constructed state
     }
 
-    std::tuple<bool, std::vector<int>> getAllLegalActionForAI() const override 
+    std::tuple<bool, std::vector<int>> getAllLegalAction() const override 
     {
         return {false, {}}; // No legal actions
     }
@@ -108,12 +108,12 @@ public:
         return {0.0f, 0.0f}; // Dummy scores
     }
 
-    std::shared_ptr<SuZeroState> switchActivePlayerForAI() const override
+    std::shared_ptr<SuZeroState> switchActivePlayer() const override
     {
         return nullptr;
     }
 
-    std::shared_ptr<SuZeroState> selectMovePositionForAI(std::array<int, 4>) const override
+    std::shared_ptr<SuZeroState> selectMovePosition(std::array<int, 4>) const override
     {
         return nullptr;
     }

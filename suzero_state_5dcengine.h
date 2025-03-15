@@ -7,13 +7,13 @@ class SuZeroState_5dcengine : public SuZeroState {
 public:
     static std::shared_ptr<SuZeroState> getNewTurnZeroAIMode();
     bool getPlayer() override;
-    bool isGameOverForAI() const override;
-    int getRewardForAI() const override;
+    bool isGameOver() const override;
+    int getReward() const override;
     StateForAI getStateForAI() const override;
-    std::tuple<bool, std::vector<int>> getAllLegalActionForAI() const override;
+    std::tuple<bool, std::vector<int>> getAllLegalAction() const override;
     std::array<float, 2> forceScoring() const override;
-    virtual std::shared_ptr<SuZeroState> switchActivePlayerForAI() const override;
-    virtual std::shared_ptr<SuZeroState> selectMovePositionForAI(std::array<int, 4>) const override;
+    virtual std::shared_ptr<SuZeroState> switchActivePlayer() const override;
+    virtual std::shared_ptr<SuZeroState> selectMovePosition(std::array<int, 4>) const override;
 };
 
 #endif //SUZERO_STATE_5DCENGINE_H
