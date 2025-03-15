@@ -1,0 +1,3 @@
+[submodule "extern/5dchess_engine"]
+	path = extern/5dchess_engine
+	url = git@github.com:SuZero-5DChess/5dchess_engine.git
