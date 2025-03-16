@@ -1,13 +1,18 @@
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.20)
+project(SuZeroCpp VERSION 1.0.0 LANGUAGES CXX)
 
-# Set the project name
-project(SuZero VERSION 1.0)
-
-# Specify the C++ standard (C++23 instead of C++14)
+# Set C++23 standard
 set(CMAKE_CXX_STANDARD 23)
-set(CMAKE_CXX_STANDARD_REQUIRED True)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
-# List all source files
+# Add the 5dchess_engine subdirectory
+add_subdirectory(extern/5dchess_engine)
+
+include_directories(
+    ${CMAKE_CURRENT_SOURCE_DIR}
+)
+
 set(SOURCES
     suzero_state_5dcengine.cpp
     test.cpp
@@ -19,31 +24,10 @@ set(HEADERS
     suzero_state_5dcengine.h
 )
 
-# Add executable target with source files
-add_executable(suzero_test ${SOURCES} ${HEADERS})
+# Create your consumer executable
+add_executable(test ${SOURCES})
 
-# Include directories
-target_include_directories(suzero_test PUBLIC
-    ${CMAKE_CURRENT_SOURCE_DIR}
-)
+target_sources(test PRIVATE ${HEADERS})
 
-# Optional: Create a library from your core files
-add_library(suzero_lib
-    suzero_state_5dcengine.cpp
-    ${HEADERS}  # Include headers in the library for IDE visibility
-)
-
-# Link the library to the test executable
-target_link_libraries(suzero_test PRIVATE suzero_lib)
-
-# Enable testing
-enable_testing()
-add_test(NAME SuZeroTest COMMAND suzero_test)
-
-# For Xcode: Organize source files into folders
-source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${SOURCES} ${HEADERS})
-
-# Set IDE properties for Xcode
-set_target_properties(suzero_test PROPERTIES
-    XCODE_ATTRIBUTE_CLANG_CXX_LANGUAGE_STANDARD "c++2b"  # Xcode-specific C++23 flag
-)
+# Link against the 5dchess_engine library
+target_link_libraries(test PRIVATE 5dchess_engine_core)

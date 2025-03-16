@@ -64,7 +64,8 @@ public:
     virtual std::size_t getStateHash()
     {
         StateForAI s = getStateForAI();
-        return 0;//std::hash<StateForAI>(s);
+        std::hash<StateForAI> hasher;
+        return hasher(s);
     }
     virtual bool getPlayer() = 0;
     virtual bool isGameOver() const = 0;

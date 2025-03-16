@@ -10,6 +10,7 @@ int main()
 {
     std::shared_ptr<SuZeroState> s = std::make_shared<SuZeroStateDummyImplementation>();
     unordered_set<StateForAI> a;
-    cout << "test finished" << endl;
+    cout << s->getStateHash() << endl;
+    cout << sizeof(StateForAI) << endl;
     return 0;
 }

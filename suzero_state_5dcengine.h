@@ -2,6 +2,7 @@
 #define SUZERO_STATE_5DCENGINE_H
 
 #include "suzero_interface.h"
+#include "state.h"
 
 class SuZeroState_5dcengine : public SuZeroState {
 public:
