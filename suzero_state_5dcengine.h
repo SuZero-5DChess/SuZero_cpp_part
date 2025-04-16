@@ -4,8 +4,14 @@
 #include "suzero_interface.h"
 #include "state.h"
 
-class SuZeroState_5dcengine : public SuZeroState {
+
+
+class SuZeroState_5dcengine : public SuZeroState
+{
+    state s;
+    std::optional<vec4> selection;
 public:
+    SuZeroState_5dcengine(std::string fen) :s{multiverse{fen}} {}
     static std::shared_ptr<SuZeroState> getNewTurnZeroAIMode();
     bool getPlayer() override;
     bool isGameOver() const override;

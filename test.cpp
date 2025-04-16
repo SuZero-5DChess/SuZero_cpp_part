@@ -8,7 +8,7 @@ using namespace std;
 
 int main()
 {
-    std::shared_ptr<SuZeroState> s = std::make_shared<SuZeroStateDummyImplementation>();
+    std::shared_ptr<SuZeroState> s = SuZeroState_5dcengine::getNewTurnZeroAIMode();
     unordered_set<StateForAI> a;
     cout << s->getStateHash() << endl;
     cout << sizeof(StateForAI) << endl;
