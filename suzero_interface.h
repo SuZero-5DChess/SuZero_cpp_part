@@ -7,6 +7,7 @@
 #include <tuple>
 #include <string>
 #include <memory>
+#include <map>
 
 inline void hash_combine(std::size_t& seed) { }
 
@@ -51,6 +52,12 @@ struct std::hash<StateForAI>
     }
 };
 
+struct AllLegalAction
+{
+    bool  canSwitchPlayer;
+    std::map<std::tuple<int, int>, std::vector<std::pair<int, int>>>  legalPosition;
+};
+
 
 /**
  * This is the interface. An implementation of this interface
@@ -71,10 +78,10 @@ public:
     virtual bool isGameOver() const = 0;
     virtual int getReward() const = 0;
     virtual StateForAI getStateForAI() const = 0;
-    virtual std::tuple<bool, std::vector<int>> getAllLegalAction() const = 0;
+    virtual AllLegalAction getAllLegalAction() const = 0;
     virtual std::array<float, 2> forceScoring() const = 0;
     virtual std::shared_ptr<SuZeroState> switchActivePlayer() const = 0;
-    virtual std::shared_ptr<SuZeroState> selectMovePosition(std::array<int, 4>) const = 0;
+    virtual std::shared_ptr<SuZeroState> selectMovePosition(std::array<int, 4>) = 0;
 };
 
 class SuZeroStateDummyImplementation : public SuZeroState {
@@ -99,9 +106,9 @@ public:
         return StateForAI{}; // Return a default-constructed state
     }
 
-    std::tuple<bool, std::vector<int>> getAllLegalAction() const override 
+    AllLegalAction getAllLegalAction() const override
     {
-        return {false, {}}; // No legal actions
+        return AllLegalAction(); // No legal actions
     }
 
     std::array<float, 2> forceScoring() const override 
@@ -114,7 +121,7 @@ public:
         return nullptr;
     }
 
-    std::shared_ptr<SuZeroState> selectMovePosition(std::array<int, 4>) const override
+    std::shared_ptr<SuZeroState> selectMovePosition(std::array<int, 4>) override
     {
         return nullptr;
     }

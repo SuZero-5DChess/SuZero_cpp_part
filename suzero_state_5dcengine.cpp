@@ -17,34 +17,12 @@ bool SuZeroState_5dcengine::getPlayer()
 
 bool SuZeroState_5dcengine::isGameOver() const
 {
-    if(s.match_status != match_status_t::PLAYING)
-    {
-        return true;
-    }
-    else if(s.gen_movable_pieces().empty())
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
+    return reward == 0;
 }
 
 int SuZeroState_5dcengine::getReward() const
 {
-    if(s.match_status != match_status_t::PLAYING)
-    {
-        return 1;
-    }
-    else if(s.gen_movable_pieces().empty())
-    {
-        return -1;
-    }
-    else
-    {
-        return 0;
-    }
+    return reward;
 }
 
 StateForAI SuZeroState_5dcengine::getStateForAI() const
@@ -111,9 +89,39 @@ StateForAI SuZeroState_5dcengine::getStateForAI() const
     return ss;
 }
 
-std::tuple<bool, std::vector<int>> SuZeroState_5dcengine::getAllLegalAction() const
+AllLegalAction SuZeroState_5dcengine::getAllLegalAction() const
 {
-    return std::tuple<bool, std::vector<int>>();
+    std::map<std::tuple<int, int>, std::vector<std::pair<int, int>>> result;
+    if(!selection.has_value())
+    {
+        for(const auto& [p0, bb] : s.gen_movable_pieces())
+        {
+            std::vector<std::pair<int, int>> rn;
+            for(int pos : marked_pos(bb))
+            {
+                vec4 p = vec4(pos, p0);
+                rn.push_back(std::make_pair(p.x(), p.y()));
+            }
+            result[std::make_tuple(p0.l(), p0.t())] = rn;
+        }
+        return {s.can_submit(), result};
+    }
+    else
+    {
+        vec4 p = selection.value();
+        auto moves = s.player ? s.m.gen_moves<true>(p) : s.m.gen_moves<false>(p);
+        for(const auto& [q0, bb] : moves)
+        {
+            std::vector<std::pair<int, int>> rn;
+            for(int pos : marked_pos(bb))
+            {
+                vec4 q = vec4(pos, q0);
+                rn.push_back(std::make_pair(q.x(), q.y()));
+            }
+            result[std::make_tuple(q0.l(), q0.t())] = rn;
+        }
+        return {s.can_submit(), result};
+    }
 }
 
 std::array<float, 2> SuZeroState_5dcengine::forceScoring() const
@@ -123,11 +131,37 @@ std::array<float, 2> SuZeroState_5dcengine::forceScoring() const
 
 std::shared_ptr<SuZeroState> SuZeroState_5dcengine::switchActivePlayer() const
 {
-    return std::shared_ptr<SuZeroState>();
+    std::shared_ptr<SuZeroState_5dcengine> ss = std::make_shared<SuZeroState_5dcengine>(*this);
+    ss->s.apply_move(full_move::submit());
+    return ss;
 }
 
-std::shared_ptr<SuZeroState> SuZeroState_5dcengine::selectMovePosition(std::array<int, 4>) const
+std::shared_ptr<SuZeroState> SuZeroState_5dcengine::selectMovePosition(std::array<int, 4> a)
 {
-    return std::shared_ptr<SuZeroState>();
+    std::shared_ptr<SuZeroState_5dcengine> ss = std::make_shared<SuZeroState_5dcengine>(*this);
+    if(!selection.has_value())
+    {
+        ss->selection = std::make_optional<vec4>(a[2], a[3], a[1], a[0]);
+    }
+    else
+    {
+        vec4 p = selection.value();
+        vec4 q = vec4(a[2], a[3], a[1], a[0]);
+        bool flag = ss->s.apply_move(full_move::move(p, q-p));
+        if(!flag)
+        {
+            std::cerr << "invalid move " << full_move::move(p, q-p) << std::endl;
+            throw std::runtime_error("invalid move");
+        }
+        if(ss->s.find_check())
+        {
+            reward = 1;
+        }
+        else if(ss->s.gen_movable_pieces().empty())
+        {
+            reward = -1;
+        }
+    }
+    return ss;
 }
 
